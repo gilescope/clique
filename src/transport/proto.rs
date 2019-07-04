@@ -104,3 +104,9 @@ impl From<Uuid> for NodeId {
         NodeId(t)
     }
 }
+
+#[derive(Debug)]
+pub struct Rank {
+    pub round: u32,
+    pub node_index: u32,
+}
