@@ -3,7 +3,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use futures::{Future, FutureExt, Stream, StreamExt};
+use futures::{Future, FutureExt, Stream, StreamExt, stream::FuturesUnordered};
 use rand::Rng;
 use tokio_sync::oneshot;
 use tokio_timer::Delay;
@@ -15,12 +15,15 @@ use paxos::Paxos;
 use crate::{
     error::{Error, Result},
     transport::{
-        proto::{self, Endpoint},
+        proto::{self, Endpoint, Phase2bMessage},
         Broadcast, Client, Request, Response,
     },
 };
 
 const BASE_DELAY: u64 = 1000;
+
+#[derive(Debug)]
+enum CancelPaxos {}
 
 pub struct FastPaxos<'a, C, B> {
     broadcast: &'a mut B,
@@ -62,15 +65,24 @@ impl<'a, C, B> FastPaxos<'a, C, B> {
         }
     }
 
-    pub async fn propose(&self, proposal: Vec<Endpoint>) {
+    pub async fn propose(&self, proposal: Vec<Endpoint>) -> Result<()> {
         let mut paxos_delay = Delay::new(Instant::now() + self.get_random_delay()).fuse();
+        let (cancel_tx, cancel_rx) = oneshot::channel::<CancelPaxos>();
+        let mut fut_runner = FuturesUnordered::new();
 
-        futures::select! {
-            _ = paxos_delay.next() => {
-                self.start_classic_round().await
-            },
-            _ = self.broadcast.broadcast(Phase2bMessage) => {}
-        };
+        fut_runner.push(async {
+            futures::select! {
+                _ = paxos_delay => {
+                    self.start_classic_round().await
+                },
+                cancel = cancel_rx.fuse().select_next_some() => { Ok(()) }
+            };
+        });
+
+        self.broadcast.broadcast(Phase2bMessage {}).await;
+        fut_runner.await;
+
+        Ok(())
     }
 
     pub async fn handle_message(&self, request: Request) -> Result<Response> {
