@@ -1,6 +1,6 @@
 use crate::{
     error::{Error, Result},
-    membership::Membership,
+    //membership::Membership,
     transport::{Client, Server},
 };
 use futures::{FutureExt, Stream, StreamExt};
@@ -16,7 +16,7 @@ use tokio_timer::Interval;
 pub struct Event;
 
 pub struct Cluster<S, C, T> {
-    membership: Membership,
+    //membership: Membership,
     server: S,
     client: C,
     listen_target: T,
@@ -36,18 +36,7 @@ where
     T: Clone,
 {
     pub fn new(server: S, client: C, listen_target: T) -> Self {
-        let (event_tx, event_rx) = watch::channel(Event::default());
-
-        let handle = Handle { event_rx };
-
-        Self {
-            membership: Membership::new(),
-            client,
-            server,
-            listen_target,
-            event_tx,
-            handle,
-        }
+        unimplemented!();
     }
 
     pub fn handle(&self) -> Handle {
@@ -55,32 +44,8 @@ where
     }
 
     pub async fn start(self) -> Result<()> {
-        let Cluster {
-            mut membership,
-            mut server,
-            client,
-            listen_target,
-            event_tx,
-            ..
-        } = self;
+        unimplemented!();
 
-        let mut server = server.start(listen_target).await.unwrap().fuse();
-        let mut edge_detector_ticker = Interval::new(Instant::now(), Duration::from_secs(1)).fuse();
-
-        loop {
-            futures::select! {
-                request = server.next() => {
-                    if let Some(Ok(request)) = request {
-                        membership.handle_message(request).await;
-                    } else {
-                        return Err(Error::new_join(None))
-                    }
-                },
-                _ = edge_detector_ticker.next() => {
-                    membership.tick().await;
-                }
-            };
-        }
     }
 }
 
