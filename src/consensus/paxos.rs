@@ -31,28 +31,7 @@ impl<'a, C> Paxos<'a, C> {
     where
         C: Client,
     {
-        Paxos {
-            client,
-            size,
-            my_addr,
-            config_id,
-            crnd: Rank {
-                round: 0,
-                node_index: 0,
-            },
-            rnd: Rank {
-                round: 0,
-                node_index: 0,
-            },
-            vrnd: Rank {
-                round: 0,
-                node_index: 0,
-            },
-            cval: Vec::new(),
-            vval: Vec::new(),
-            phase_1b_messages: Vec::new(),
-            phase_2a_messages: Vec::new(),
-        }
+       unimplemented!()
     }
 
     pub async fn start_round(&mut self) -> Result<()> {
