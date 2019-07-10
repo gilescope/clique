@@ -8,8 +8,6 @@ authors = [
 edition = "2018"
 publish = false
 
-[workspace]
-members = ["clique-grpc"]
 
 [dependencies]
 bytes = "0.4"
