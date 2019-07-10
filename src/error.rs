@@ -19,52 +19,40 @@ pub(crate) enum ErrorKind {
 
 impl Error {
     pub(crate) fn new(kind: ErrorKind, source: Option<Source>) -> Self {
-        Self { kind, source }
+        unimplemented!()
     }
 
-    pub(crate) fn new_broken_pipe(source: Option<Source>) -> Self {
-        Self::new(ErrorKind::BrokenPipe, source)
-    }
+    pub(crate) fn new_broken_pipe(source: Option<Source>) -> Self {unimplemented!()}
 
-    pub(crate) fn new_join(source: Option<Source>) -> Self {
-        Self::new(ErrorKind::Join, source)
-    }
+    pub(crate) fn new_join(source: Option<Source>) -> Self {unimplemented!()}
 
-    pub(crate) fn new_unexpected_request(source: Option<Source>) -> Self {
-        Self::new(ErrorKind::UnexpectedRequestType, source)
-    }
+    pub(crate) fn new_unexpected_request(source: Option<Source>) -> Self {unimplemented!()}
 }
 
+
 impl From<ErrorKind> for Error {
-    fn from(t: ErrorKind) -> Self {
-        Error::new(t, None)
-    }
+    fn from(t: ErrorKind) -> Self {unimplemented!()}
 }
 
 impl From<(ErrorKind, Source)> for Error {
-    fn from(t: (ErrorKind, Source)) -> Self {
-        Error::new(t.0, Some(t.1))
-    }
+    fn from(t: (ErrorKind, Source)) -> Self {unimplemented!()}
 }
+
+
 
 impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut f = f.debug_tuple("Error");
         f.field(&self.kind);
-        if let Some(source) = &self.source {
-            f.field(source);
-        }
+        if let Some(source) = &self.source {unimplemented!()}
         f.finish()
     }
 }
 
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if let Some(source) = &self.source {
-            write!(f, "{}: {}", self.kind, source)
-        } else {
-            write!(f, "{}", self.kind)
-        }
+        unimplemented!()
     }
 }
 
@@ -72,6 +60,6 @@ impl error::Error for Error {}
 
 impl fmt::Display for ErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        unimplemented!()
     }
 }
