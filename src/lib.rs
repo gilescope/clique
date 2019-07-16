@@ -1,6 +1,5 @@
 #![feature(async_await)]
 mod error {
-    use std::{error, fmt};
     pub type Result<T> = std::result::Result<T, Error>;
     pub struct Error {}
 }
@@ -19,10 +18,7 @@ pub mod transport {
             pub config_id: ConfigId,
             pub endpoints: Vec<Endpoint>,
         }
-        pub struct Phase1bMessage {}
-        pub struct Phase2aMessage {}
         pub struct Phase2bMessage {}
-        pub struct Rank {}
     }
     use std::future::Future;
     use tokio_sync::oneshot;
