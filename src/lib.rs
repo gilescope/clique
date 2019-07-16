@@ -30,10 +30,8 @@ mod consensus {
         }
     }
     use crate::{
-        error::{Error},
-        transport::{
-            Broadcast, Client, Request, Response,
-        },
+        error::Error,
+        transport::{Broadcast, Client, Request, Response},
     };
     use paxos::Paxos;
     pub struct FastPaxos<'a, C, B> {
@@ -50,8 +48,6 @@ mod consensus {
             let request = Request::new(tx);
             self.broadcast.broadcast(request).await;
             rx.await;
-
         }
     }
 }
-pub use self::error::{Error};
