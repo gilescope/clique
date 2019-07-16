@@ -15,7 +15,6 @@ pub mod transport {
         use std::collections::HashMap;
         use uuid::Uuid;
         pub type ConfigId = i64;
-        pub type RingNumber = i32;
         pub type Endpoint = String;
         pub struct NodeId(Uuid);
         pub enum ResponseKind {}
@@ -28,21 +27,6 @@ pub mod transport {
             Phase1bMessage(Phase1bMessage),
             Phase2aMessage(Phase2aMessage),
             Phase2bMessage(Phase2bMessage),
-        }
-        pub struct JoinResponse {
-            pub sender: Endpoint,
-            pub status: JoinStatus,
-            pub config_id: ConfigId,
-            pub endpoints: Vec<Endpoint>,
-            pub identifiers: Vec<NodeId>,
-            pub cluster_metadata: HashMap<String, Metadata>,
-        }
-        pub enum JoinStatus {
-            HostnameAlreadyInRing,
-            NodeIdAlreadyInRing,
-            SafeToJoin,
-            ConfigChanged,
-            MembershipRejected,
         }
         pub struct FastRoundPhase2bMessage {
             pub sender: Endpoint,
@@ -72,9 +56,6 @@ pub mod transport {
             pub config_id: ConfigId,
             pub rnd: Rank,
             pub endpoints: Vec<Endpoint>,
-        }
-        pub struct Metadata {
-            pub metadata: HashMap<String, Bytes>,
         }
         pub struct Rank {
             pub round: u32,
