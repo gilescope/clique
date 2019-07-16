@@ -125,13 +125,8 @@ mod consensus {
     pub struct FastPaxos<'a, C, B> {
         broadcast: &'a mut B,
         my_addr: Endpoint,
-        size: usize,
-        decided: AtomicBool,
-        decision_tx: oneshot::Sender<Vec<Endpoint>>,
         paxos: Option<Paxos<'a, C>>,
         config_id: ConfigId,
-        votes_received: HashSet<Endpoint>,
-        votes_per_proposal: HashMap<Vec<Endpoint>, AtomicUsize>,
     }
     impl<'a, C, B> FastPaxos<'a, C, B>
     where
