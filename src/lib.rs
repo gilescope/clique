@@ -7,7 +7,6 @@ pub mod transport {
     pub mod proto {
         pub type ConfigId = i64;
         pub type Endpoint = String;
-        pub struct Phase2bMessage {}
     }
     use std::future::Future;
     use tokio_sync::oneshot;
@@ -30,11 +29,6 @@ pub mod transport {
     }
 }
 mod consensus {
-    use std::{
-        collections::{HashMap, HashSet},
-        sync::atomic::{AtomicBool, AtomicUsize, Ordering},
-        time::{Duration, Instant},
-    };
     use tokio_sync::oneshot;
     mod paxos {
         pub struct Paxos<'a, C> {
@@ -44,7 +38,7 @@ mod consensus {
     use crate::{
         error::{Error, Result},
         transport::{
-            proto::{self, ConfigId, Endpoint, Phase2bMessage},
+            proto::{self, ConfigId, Endpoint},
             Broadcast, Client, Request, Response,
         },
     };
