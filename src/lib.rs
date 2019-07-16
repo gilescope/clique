@@ -3,10 +3,9 @@ use std::future::Future;
 use tokio_sync::oneshot;
 pub trait Client {
     type Future: Future<Output = Response>;
-    fn call(&mut self, req: Request) -> Self::Future;
+    fn call(&mut self) -> Self::Future;
 }
 pub trait Broadcast {
-    type Error: std::error::Error;
     type Future: Future<Output = Vec<Response>>;
     fn broadcast(&mut self, req: Request) -> Self::Future;
 }
@@ -17,20 +16,17 @@ impl Request {
         unimplemented!()
     }
 }
-
 pub struct Paxos<'a, C> {
     client: &'a mut C,
 }
-pub struct FastPaxos<'a, C, B> {
+pub struct FastPaxos<'a, B> {
     broadcast: &'a mut B,
-    paxos: Option<Paxos<'a, C>>,
 }
-impl<'a, C, B> FastPaxos<'a, C, B>
+impl<'a,  B> FastPaxos<'a, B>
     where
-        C: Client,
         B: Broadcast,
 {
-    pub async fn propose(&mut self, proposal: Vec<String>) -> () {
+    pub async fn propose(&mut self) -> () {
         let (tx, rx) = oneshot::channel();
         let request = Request::new(tx);
         self.broadcast.broadcast(request).await;
