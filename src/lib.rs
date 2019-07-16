@@ -1,29 +1,23 @@
 #![feature(async_await)]
 mod error {
-    pub type Result<T> = std::result::Result<T, Error>;
     pub struct Error {}
 }
 pub mod transport {
-    pub mod proto {
-        pub type ConfigId = i64;
-        pub type Endpoint = String;
-    }
     use std::future::Future;
     use tokio_sync::oneshot;
     pub trait Client {
-        type Error: std::error::Error;
-        type Future: Future<Output = Result<Response, Self::Error>>;
+        type Future: Future<Output = Response>;
         fn call(&mut self, req: Request) -> Self::Future;
     }
     pub trait Broadcast {
         type Error: std::error::Error;
-        type Future: Future<Output = Vec<Result<Response, Self::Error>>>;
+        type Future: Future<Output = Vec<Response>>;
         fn broadcast(&mut self, req: Request) -> Self::Future;
     }
     pub struct Request {}
     pub struct Response {}
     impl Request {
-        pub fn new(res_tx: oneshot::Sender<crate::Result<Response>>) -> Self {
+        pub fn new(res_tx: oneshot::Sender<Response>) -> Self {
             unimplemented!()
         }
     }
@@ -36,9 +30,8 @@ mod consensus {
         }
     }
     use crate::{
-        error::{Error, Result},
+        error::{Error},
         transport::{
-            proto::{self, ConfigId, Endpoint},
             Broadcast, Client, Request, Response,
         },
     };
@@ -52,13 +45,13 @@ mod consensus {
             C: Client,
             B: Broadcast,
     {
-        pub async fn propose(&mut self, proposal: Vec<Endpoint>) -> Result<()> {
+        pub async fn propose(&mut self, proposal: Vec<String>) -> () {
             let (tx, rx) = oneshot::channel();
             let request = Request::new(tx);
             self.broadcast.broadcast(request).await;
             rx.await;
-            Ok(())
+
         }
     }
 }
-pub use self::error::{Error, Result};
+pub use self::error::{Error};
