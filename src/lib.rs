@@ -11,22 +11,15 @@ mod error {
 }
 pub mod transport {
     pub mod proto {
-        use bytes::Bytes;
-        use std::collections::HashMap;
         use uuid::Uuid;
         pub type ConfigId = i64;
         pub type Endpoint = String;
-        pub struct NodeId(Uuid);
         pub enum ResponseKind {}
         pub enum RequestKind {
             Consensus(Consensus),
         }
         pub enum Consensus {
             FastRoundPhase2bMessage(FastRoundPhase2bMessage),
-            Phase1aMessage(Phase1aMessage),
-            Phase1bMessage(Phase1bMessage),
-            Phase2aMessage(Phase2aMessage),
-            Phase2bMessage(Phase2bMessage),
         }
         pub struct FastRoundPhase2bMessage {
             pub sender: Endpoint,
