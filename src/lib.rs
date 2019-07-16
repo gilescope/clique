@@ -8,16 +8,12 @@ pub mod transport {
         pub type ConfigId = i64;
         pub type Endpoint = String;
         pub enum RequestKind {
-            Consensus(Consensus),
+            Consensus(),
         }
         pub enum Consensus {
-            FastRoundPhase2bMessage(FastRoundPhase2bMessage),
+            FastRoundPhase2bMessage(),
         }
-        pub struct FastRoundPhase2bMessage {
-            pub sender: Endpoint,
-            pub config_id: ConfigId,
-            pub endpoints: Vec<Endpoint>,
-        }
+        pub struct FastRoundPhase2bMessage {}
         pub struct Phase2bMessage {}
     }
     use std::future::Future;
@@ -37,7 +33,7 @@ pub mod transport {
     impl Request {
         pub fn new(
             res_tx: oneshot::Sender<crate::Result<Response>>,
-            kind: proto::RequestKind,
+          //  kind: proto::RequestKind,
         ) -> Self {
             unimplemented!()
         }
@@ -77,17 +73,8 @@ mod consensus {
         B: Broadcast,
     {
         pub async fn propose(&mut self, proposal: Vec<Endpoint>) -> Result<()> {
-            let mut paxos_delay = Delay::new(Instant::now() + self.get_random_delay()).fuse();
-            async { unimplemented!() }.await;
             let (tx, rx) = oneshot::channel();
-            let kind = proto::RequestKind::Consensus(proto::Consensus::FastRoundPhase2bMessage(
-                proto::FastRoundPhase2bMessage {
-                    sender: self.my_addr.clone(),
-                    config_id: self.config_id,
-                    endpoints: proposal,
-                },
-            ));
-            let request = Request::new(tx, kind);
+            let request = Request::new(tx);
             self.broadcast.broadcast(request).await;
             rx.await;
             Ok(())
