@@ -2,19 +2,12 @@
 mod error {
     use std::{error, fmt};
     pub type Result<T> = std::result::Result<T, Error>;
-    type Source = Box<dyn error::Error + Send + Sync>;
-    pub struct Error {
-        kind: ErrorKind,
-        source: Option<Source>,
-    }
-    pub(crate) enum ErrorKind {}
+    pub struct Error {}
 }
 pub mod transport {
     pub mod proto {
-        use uuid::Uuid;
         pub type ConfigId = i64;
         pub type Endpoint = String;
-        pub enum ResponseKind {}
         pub enum RequestKind {
             Consensus(Consensus),
         }
@@ -26,34 +19,10 @@ pub mod transport {
             pub config_id: ConfigId,
             pub endpoints: Vec<Endpoint>,
         }
-        pub struct Phase1aMessage {
-            pub sender: Endpoint,
-            pub config_id: ConfigId,
-            pub rank: Rank,
-        }
-        pub struct Phase1bMessage {
-            pub sender: Endpoint,
-            pub config_id: ConfigId,
-            pub rnd: Rank,
-            pub vrnd: Rank,
-            pub vval: Vec<Endpoint>,
-        }
-        pub struct Phase2aMessage {
-            pub sender: Endpoint,
-            pub config_id: ConfigId,
-            pub rnd: Rank,
-            pub vval: Vec<Endpoint>,
-        }
-        pub struct Phase2bMessage {
-            pub sender: Endpoint,
-            pub config_id: ConfigId,
-            pub rnd: Rank,
-            pub endpoints: Vec<Endpoint>,
-        }
-        pub struct Rank {
-            pub round: u32,
-            pub node_index: u32,
-        }
+        pub struct Phase1bMessage {}
+        pub struct Phase2aMessage {}
+        pub struct Phase2bMessage {}
+        pub struct Rank {}
     }
     use std::future::Future;
     use tokio_sync::oneshot;
@@ -67,13 +36,8 @@ pub mod transport {
         type Future: Future<Output = Vec<Result<Response, Self::Error>>>;
         fn broadcast(&mut self, req: Request) -> Self::Future;
     }
-    pub struct Request {
-        kind: proto::RequestKind,
-        res_tx: oneshot::Sender<crate::Result<Response>>,
-    }
-    pub struct Response {
-        kind: proto::ResponseKind,
-    }
+    pub struct Request {}
+    pub struct Response {}
     impl Request {
         pub fn new(
             res_tx: oneshot::Sender<crate::Result<Response>>,
@@ -93,25 +57,8 @@ mod consensus {
     use tokio_sync::oneshot;
     use tokio_timer::Delay;
     mod paxos {
-        use crate::{
-            error::Result,
-            transport::{
-                proto::{ConfigId, Endpoint, Phase1bMessage, Phase2aMessage, Rank},
-                Client, Request, Response,
-            },
-        };
         pub struct Paxos<'a, C> {
             client: &'a mut C,
-            size: usize,
-            my_addr: Endpoint,
-            rnd: Rank,
-            vrnd: Rank,
-            vval: Vec<Endpoint>,
-            crnd: Rank,
-            cval: Vec<Endpoint>,
-            config_id: ConfigId,
-            phase_1b_messages: Vec<Phase1bMessage>,
-            phase_2a_messages: Vec<Phase2aMessage>,
         }
     }
     use crate::{
